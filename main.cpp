@@ -40,12 +40,9 @@ int RectHeight = RECT_HEIGHT;
 bool graphicsInit();
 bool loadMedia();
 void close();
-SDL_Texture *loadTexture(std::string path);
-void clearScreen();
 void renderFrame();
 
 //file path functions
-std::string filePathComponent(const std::string& str);
 std::string lastPathComponent(const std::string& str);
 
 SDL_Window   *gWindow        = NULL;
@@ -53,10 +50,11 @@ SDL_Surface  *gScreenSurface = NULL;
 SDL_Renderer *gRenderer      = NULL;
 SDL_Texture  *gTexture       = NULL;
 
-LTexture gDebugPanelTexture;
-
 Game game;
-TTF_Font *gFont;
+LTexture gFPSTexture;
+LTexture gFrameCountTexture;
+
+TTF_Font *gDebugPanelFont;
 int frameCount  = 0;
 float avgFPS;
 
@@ -138,93 +136,97 @@ bool graphicsInit() {
     return success;
 }
 
+#define WhiteColor24 {0xff,0xff,0xff}
+#define WhiteColor32 {0xff,0xff,0xff,0xff}
+
 bool loadMedia() {
 #ifdef DEBUG
     printf( "loadMedia()\n" );
 #endif
     bool success = true;
-    SDL_Color textColor = { 0xff, 0xff, 0xff };
+
+    //load the debug panel font
+    SDL_Color textColor = WhiteColor24;
     int fontSize = 14;
+    char *fontName = "Terminus.ttf";
 #ifdef DEBUG
         printf( "opening font...\n" );
 #endif
-    gFont = TTF_OpenFont("Terminus.ttf", fontSize);
-    if ( gFont == NULL ) {
+    gDebugPanelFont = TTF_OpenFont(fontName, fontSize);
+
+    if ( gDebugPanelFont == NULL ) {
         printf("Failed to load font!\n");
         success = false;
     }
     else {
-        gDebugPanelTexture.setFont(gFont);
-        gDebugPanelTexture.setRenderer(gRenderer);
+        //load the debug panel
+        gFPSTexture.setFont(gDebugPanelFont);
+        gFPSTexture.setRenderer(gRenderer);
+
+        gFrameCountTexture.setFont(gDebugPanelFont);
+        gFrameCountTexture.setRenderer(gRenderer);
     }
-    if( !gDebugPanelTexture.loadFromRenderedText( "FPS: ", textColor ) ) {
+    
+    if ( !gFPSTexture.loadFromRenderedText( "FPS: ", textColor ) ) {
         printf( "Failed to load text texture!\n" );
         success = false;
     }
+    
+    if ( !gFrameCountTexture.loadFromRenderedText( "Frame: ", textColor ) ) {
+        printf( "Failed to load text texture!\n" );
+        success = false;
+    }
+
     return success;
 }
 
 void close() {
+    // destroy the texture, renderer, window, and set them to null
     SDL_DestroyTexture(gTexture);
-    gTexture = NULL;
-    
     SDL_DestroyRenderer(gRenderer);
-    gRenderer = NULL;
-    
     SDL_DestroyWindow(gWindow);
+    gTexture = NULL;
+    gRenderer = NULL;
     gWindow = NULL;
-    
-    TTF_CloseFont( gDebugPanelTexture.getFont() );
-    gDebugPanelTexture.free();
-
+    // close the debug panel font and free the texture
+    TTF_CloseFont( gDebugPanelFont );
+    gFPSTexture.free();
+    gFrameCountTexture.free();
+    // have to quit TTF, IMG, and SDL
     TTF_Quit();
     IMG_Quit();
     SDL_Quit();
 }
 
-SDL_Texture *loadTexture(std::string path) {
-    SDL_Texture *newTexture = NULL;
-    SDL_Surface *loadedSurface = IMG_Load(path.c_str());
-    if (!loadedSurface) {
-        printf("Unable to load surface. SDL Error: %s\n", SDL_GetError());
-    }
-    else {
-        newTexture = SDL_CreateTextureFromSurface(gRenderer, loadedSurface);
-        if (!newTexture) {
-            printf("Unable to create texture. SDL Error: %s\n", SDL_GetError());
-        }
-        SDL_FreeSurface(loadedSurface);
-    }
-    return newTexture;
-}
-
 #pragma mark - Drawing Functions
-
-void clearScreen() {
+void renderFrame() {
+    //clear screen
     int r = 0x00;
     int g = 0x00;
     int b = 0x00;
     int a = 0xff;
     SDL_SetRenderDrawColor(gRenderer, r, g, b, a);
     SDL_RenderClear(gRenderer);
-}
-
-void renderFrame() {
-    clearScreen();
-    SDL_Color textColor = { 0xff, 0xff, 0xff, 0xff } ;
-    gDebugPanelTexture.loadFromRenderedText( "FPS: " + std::to_string(avgFPS), textColor);
+    //render debug panel
     int paddingX = 20;
     int paddingY = 20;
-    gDebugPanelTexture.render( paddingX, paddingY );
+    
+    SDL_Color textColor = WhiteColor32;
+    gFPSTexture.loadFromRenderedText( "FPS:   " + std::to_string(avgFPS), textColor);
+    gFPSTexture.render( paddingX, paddingY );
+
+    paddingX += 0;
+    paddingY += 20;
+
+    gFrameCountTexture.loadFromRenderedText( "Frame: " + std::to_string(frameCount), textColor);
+    gFrameCountTexture.render( paddingX, paddingY );
+
+    //present the renderer
     SDL_RenderPresent(gRenderer);
     frameCount++;
 }
 
 #pragma mark - File Path Functions
-
-std::string filePathComponent(const std::string& str) {
-    return str.substr(0, str.find_last_of("/\\"));
-}
 
 std::string lastPathComponent(const std::string& str) {
     return str.substr(str.find_last_of("/\\")+1);
