@@ -1,8 +1,6 @@
 #ifndef _GAME_H
 #define _GAME_H
-
 #include <string>
-
 class Game {
 public:
     Game();
@@ -11,5 +9,5 @@ public:
 private:
     std::string name;
 };
-
 #endif 
+
