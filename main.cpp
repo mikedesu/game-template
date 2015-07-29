@@ -26,10 +26,9 @@ const int ArrowKeyDown  = 1073741905;
 const int DefaultScreenWidth  = 640; 
 const int DefaultScreenHeight = 480;
 
-//graphics management functions
-
 bool renderDebugPanelOn = true;
 
+//graphics management functions
 bool graphicsInit();
 bool loadMedia();
 void close();
@@ -132,17 +131,11 @@ bool graphicsInit() {
 }
 
 bool loadMedia() {
-#ifdef DEBUG
-    printf( "loadMedia()\n" );
-#endif
     bool success = true;
     //load the debug panel font
     SDL_Color textColor = WhiteColor24;
     int fontSize = 14;
     std::string fontName = "Terminus.ttf";
-#ifdef DEBUG
-        printf( "opening font...\n" );
-#endif
     gDebugPanelFont = TTF_OpenFont(fontName.c_str(), fontSize);
     if ( gDebugPanelFont == NULL ) {
         printf("Failed to load font!\n");
