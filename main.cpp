@@ -74,10 +74,13 @@ int main( int argc, char* args[] ) {
                         quit = true;
                     }
                     else if (e.type == SDL_KEYDOWN) {
-                        //SDL_Keycode keycode = e.key.keysym.sym;
+                        SDL_Keycode keycode = e.key.keysym.sym;
                         //Uint16 mod = e.key.keysym.mod;
-                        // checks for left shift, right shift, or capslock
+                        //checks for left shift, right shift, or capslock
                         //bool is_uppercase = mod == KMOD_LSHIFT || mod == KMOD_RSHIFT || mod == KMOD_CAPS;
+                        if (keycode == 'd') { 
+                            renderDebugPanelOn = !renderDebugPanelOn;
+                        }
                     }
                 }
                 renderFrame();
