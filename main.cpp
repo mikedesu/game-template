@@ -16,26 +16,15 @@
 #define WhiteColor24 {0xff,0xff,0xff}
 #define WhiteColor32 {0xff,0xff,0xff,0xff}
 
+/*
 const int ArrowKeyLeft  = 1073741904;
 const int ArrowKeyRight = 1073741903;
 const int ArrowKeyUp    = 1073741906;
 const int ArrowKeyDown  = 1073741905;
+*/
 
-const int DefaultNumRectsWide = 32; 
-const int DefaultNumRectsHigh = 24; 
 const int DefaultScreenWidth  = 640; 
 const int DefaultScreenHeight = 480;
-
-int NumRectsWide = DefaultNumRectsWide;
-int NumRectsHigh = DefaultNumRectsHigh;
-int ScreenWidth  = DefaultScreenWidth;
-int ScreenHeight = DefaultScreenHeight;
-
-#define RECT_WIDTH  (ScreenWidth/NumRectsWide)
-#define RECT_HEIGHT (ScreenHeight/NumRectsHigh)
-
-int RectWidth  = RECT_WIDTH;
-int RectHeight = RECT_HEIGHT;
 
 //graphics management functions
 
@@ -85,10 +74,10 @@ int main( int argc, char* args[] ) {
                         quit = true;
                     }
                     else if (e.type == SDL_KEYDOWN) {
-                        SDL_Keycode keycode = e.key.keysym.sym;
-                        Uint16 mod = e.key.keysym.mod;
+                        //SDL_Keycode keycode = e.key.keysym.sym;
+                        //Uint16 mod = e.key.keysym.mod;
                         // checks for left shift, right shift, or capslock
-                        bool is_uppercase = mod == KMOD_LSHIFT || mod == KMOD_RSHIFT || mod == KMOD_CAPS;
+                        //bool is_uppercase = mod == KMOD_LSHIFT || mod == KMOD_RSHIFT || mod == KMOD_CAPS;
                     }
                 }
                 renderFrame();
@@ -147,11 +136,11 @@ bool loadMedia() {
     //load the debug panel font
     SDL_Color textColor = WhiteColor24;
     int fontSize = 14;
-    char *fontName = "Terminus.ttf";
+    std::string fontName = "Terminus.ttf";
 #ifdef DEBUG
         printf( "opening font...\n" );
 #endif
-    gDebugPanelFont = TTF_OpenFont(fontName, fontSize);
+    gDebugPanelFont = TTF_OpenFont(fontName.c_str(), fontSize);
     if ( gDebugPanelFont == NULL ) {
         printf("Failed to load font!\n");
         success = false;
