@@ -39,6 +39,8 @@ int RectHeight = RECT_HEIGHT;
 
 //graphics management functions
 
+bool renderDebugPanelOn = true;
+
 bool graphicsInit();
 bool loadMedia();
 void close();
@@ -202,27 +204,36 @@ void renderFrame() {
     int paddingY = 20;
     SDL_SetRenderDrawColor(gRenderer, r, g, b, a);
     SDL_RenderClear(gRenderer);
-    //render debug panel
-    r = 0;
-    g = 0;
-    b = 0;
-    a = 0xff;
-    SDL_SetRenderDrawColor(gRenderer, r, g, b, a);
-    SDL_Rect rect;
-    rect.x = paddingX;
-    rect.y = paddingY;
-    rect.w = 200;
-    rect.h = 100;
-    SDL_RenderFillRect(gRenderer, &rect);
-    paddingX += 20;
-    paddingY += 20;
-    SDL_Color textColor = WhiteColor32;
-    gFPSTexture.loadFromRenderedText( "FPS:   " + std::to_string(avgFPS), textColor);
-    gFPSTexture.render( paddingX, paddingY );
-    paddingX += 0;
-    paddingY += 20;
-    gFrameCountTexture.loadFromRenderedText( "Frame: " + std::to_string(frameCount), textColor);
-    gFrameCountTexture.render( paddingX, paddingY );
+
+    if (renderDebugPanelOn) {
+        //render debug panel
+        //render black box
+        r = 0;
+        g = 0;
+        b = 0;
+        a = 0xff;
+        SDL_SetRenderDrawColor(gRenderer, r, g, b, a);
+        SDL_Rect rect;
+        rect.x = paddingX;
+        rect.y = paddingY;
+        rect.w = 200;
+        rect.h = 100;
+        SDL_RenderFillRect(gRenderer, &rect);
+
+        //render fps text
+        paddingX += 20;
+        paddingY += 20;
+        SDL_Color textColor = WhiteColor32;
+        gFPSTexture.loadFromRenderedText( "FPS:   " + std::to_string(avgFPS), textColor);
+        gFPSTexture.render( paddingX, paddingY );
+        
+        //render frame count text
+        paddingX += 0;
+        paddingY += 20;
+        gFrameCountTexture.loadFromRenderedText( "Frame: " + std::to_string(frameCount), textColor);
+        gFrameCountTexture.render( paddingX, paddingY );
+    }
+    
     //present the renderer
     SDL_RenderPresent(gRenderer);
     frameCount++;
