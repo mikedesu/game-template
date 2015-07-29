@@ -1,17 +1,8 @@
-//
-//  LTimer.cpp
-//  rpg-game
-//
-//  Created by darkmage on 7/17/15.
-//  Copyright (c) 2015 Mike Bell. All rights reserved.
-//
-
 #include "LTimer.h"
 
 LTimer::LTimer() {
     mStartTicks  = 0;
     mPausedTicks = 0;
-    
     mPaused  = false;
     mStarted = false;
 }
@@ -48,7 +39,6 @@ void LTimer::unpause() {
 
 Uint32 LTimer::getTicks() {
     Uint32 time = 0;
-    
     if (mStarted) {
         if (mPaused) {
             time = mPausedTicks;
@@ -67,3 +57,4 @@ bool LTimer::isStarted() {
 bool LTimer::isPaused() {
     return mPaused && mStarted;
 }
+

@@ -1,7 +1,6 @@
 #include "LTexture.h"
 
 LTexture::LTexture() {
-    //Initialize
     mTexture = NULL;
     gRenderer = NULL;
     gFont = NULL;
@@ -10,7 +9,6 @@ LTexture::LTexture() {
 }
 
 LTexture::~LTexture() {
-    //Deallocate
     free();
 }
 

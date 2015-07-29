@@ -1,11 +1,3 @@
-//
-//  main.cpp
-//  rpg-game
-//
-//  Created by darkmage on 5/25/15.
-//  Copyright (c) 2015 Mike Bell. All rights reserved.
-//
-
 #include <SDL2/SDL.h>
 #include <SDL_image/SDL_image.h>
 #include <SDL_ttf/SDL_ttf.h>
@@ -18,7 +10,7 @@
 #include "LTexture.h"
 
 #define DEBUG_MODE 1
-#define PRINT_FPS_TO_STDOUT 1
+//#define PRINT_FPS_TO_STDOUT 1
 
 #define mPrint(s) (std::cout << lastPathComponent(__FILE__) << ":" << __LINE__ << ": " << s << std::endl)
 
@@ -27,10 +19,10 @@ const int ArrowKeyRight = 1073741903;
 const int ArrowKeyUp    = 1073741906;
 const int ArrowKeyDown  = 1073741905;
 
-const int DefaultNumRectsWide   = 32;
-const int DefaultNumRectsHigh   = 24;
-const int DefaultScreenWidth    = 640;
-const int DefaultScreenHeight   = 480;
+const int DefaultNumRectsWide = 32; 
+const int DefaultNumRectsHigh = 24; 
+const int DefaultScreenWidth  = 640; 
+const int DefaultScreenHeight = 480;
 
 int NumRectsWide = DefaultNumRectsWide;
 int NumRectsHigh = DefaultNumRectsHigh;
@@ -41,17 +33,14 @@ int ScreenHeight = DefaultScreenHeight;
 #define RECT_WIDTH  (ScreenWidth/NumRectsWide)
 #define RECT_HEIGHT (ScreenHeight/NumRectsHigh)
 
-int RectWidth   = RECT_WIDTH;
-int RectHeight  = RECT_HEIGHT;
-
-int frameCount  = 0;
+int RectWidth  = RECT_WIDTH;
+int RectHeight = RECT_HEIGHT;
 
 //graphics management functions
-bool graphics_init();
+bool graphicsInit();
 bool loadMedia();
 void close();
 SDL_Texture *loadTexture(std::string path);
-void drawBlockInCenter(int r, int g, int b, int a);
 void clearScreen();
 void renderFrame();
 
@@ -64,14 +53,15 @@ SDL_Surface  *gScreenSurface = NULL;
 SDL_Renderer *gRenderer      = NULL;
 SDL_Texture  *gTexture       = NULL;
 
-LTexture gTextTexture;
+LTexture gDebugPanelTexture;
+
 Game game;
 TTF_Font *gFont;
-
+int frameCount  = 0;
 float avgFPS;
 
 int main( int argc, char* args[] ) {
-    if (!graphics_init()) {
+    if (!graphicsInit()) {
         printf("Failed to init");
     }
     else {
@@ -98,9 +88,6 @@ int main( int argc, char* args[] ) {
                         Uint16 mod = e.key.keysym.mod;
                         // checks for left shift, right shift, or capslock
                         bool is_uppercase = mod == KMOD_LSHIFT || mod == KMOD_RSHIFT || mod == KMOD_CAPS;
-                        if (keycode == ArrowKeyLeft) {
-                            //cameraMoveLeft();
-                        }
                     }
                 }
                 renderFrame();
@@ -114,14 +101,14 @@ int main( int argc, char* args[] ) {
     return 0;
 }
 
-bool graphics_init() {
+bool graphicsInit() {
     bool success = true;
     if ( SDL_Init(SDL_INIT_VIDEO) < 0 ) {
         printf("SDL could not initialize: %s\n", SDL_GetError());
         success = false;
     }
     else {
-        gWindow = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, DefaultScreenWidth, DefaultScreenHeight, SDL_WINDOW_SHOWN);
+        gWindow = SDL_CreateWindow(game.getName().c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, DefaultScreenWidth, DefaultScreenHeight, SDL_WINDOW_SHOWN);
         if (!gWindow) {
             printf("Window could not be created!: %s\n", SDL_GetError());
             success = false;
@@ -132,7 +119,7 @@ bool graphics_init() {
                 printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
             }
             else {
-                SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+                SDL_SetRenderDrawColor(gRenderer, 0xff, 0xff, 0xff, 0xff);
                 int imgFlags = IMG_INIT_PNG;
                 if ( ! (IMG_Init(imgFlags) & imgFlags) ) {
                     printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
@@ -156,7 +143,7 @@ bool loadMedia() {
     printf( "loadMedia()\n" );
 #endif
     bool success = true;
-    SDL_Color textColor = { 0xFF, 0xFF, 0xFF };
+    SDL_Color textColor = { 0xff, 0xff, 0xff };
     int fontSize = 14;
 #ifdef DEBUG
         printf( "opening font...\n" );
@@ -167,10 +154,10 @@ bool loadMedia() {
         success = false;
     }
     else {
-        gTextTexture.setFont(gFont);
-        gTextTexture.setRenderer(gRenderer);
+        gDebugPanelTexture.setFont(gFont);
+        gDebugPanelTexture.setRenderer(gRenderer);
     }
-    if( !gTextTexture.loadFromRenderedText( "FPS: ", textColor ) ) {
+    if( !gDebugPanelTexture.loadFromRenderedText( "FPS: ", textColor ) ) {
         printf( "Failed to load text texture!\n" );
         success = false;
     }
@@ -179,20 +166,16 @@ bool loadMedia() {
 
 void close() {
     SDL_DestroyTexture(gTexture);
-    
     gTexture = NULL;
     
     SDL_DestroyRenderer(gRenderer);
-    
     gRenderer = NULL;
     
     SDL_DestroyWindow(gWindow);
-    
     gWindow = NULL;
     
-    TTF_CloseFont( gTextTexture.getFont() );
-    
-    gTextTexture.free();
+    TTF_CloseFont( gDebugPanelTexture.getFont() );
+    gDebugPanelTexture.free();
 
     TTF_Quit();
     IMG_Quit();
@@ -215,35 +198,13 @@ SDL_Texture *loadTexture(std::string path) {
     return newTexture;
 }
 
-#pragma mark - Key Press Info Functions
-void print_key_info(int keycode) {
-    if (keycode == ArrowKeyLeft) {
-        printf("Arrow Key Left\n");
-    }
-    // Right
-    else if (keycode == ArrowKeyRight) {
-        printf("Arrow Key Right\n");
-    }
-    // Up
-    else if (keycode == ArrowKeyUp) {
-        printf("Arrow Key Up\n");
-    }
-    // Down
-    else if (keycode == ArrowKeyDown) {
-        printf("Arrow Key Down\n");
-    }
-    else {
-        printf("%c\n", keycode);
-    }
-}
-
 #pragma mark - Drawing Functions
 
 void clearScreen() {
     int r = 0x00;
     int g = 0x00;
     int b = 0x00;
-    int a = 0xFF;
+    int a = 0xff;
     SDL_SetRenderDrawColor(gRenderer, r, g, b, a);
     SDL_RenderClear(gRenderer);
 }
@@ -251,8 +212,10 @@ void clearScreen() {
 void renderFrame() {
     clearScreen();
     SDL_Color textColor = { 0xff, 0xff, 0xff, 0xff } ;
-    gTextTexture.loadFromRenderedText( "FPS: " + std::to_string(avgFPS), textColor);
-    gTextTexture.render( 20, 20 );
+    gDebugPanelTexture.loadFromRenderedText( "FPS: " + std::to_string(avgFPS), textColor);
+    int paddingX = 20;
+    int paddingY = 20;
+    gDebugPanelTexture.render( paddingX, paddingY );
     SDL_RenderPresent(gRenderer);
     frameCount++;
 }
@@ -260,12 +223,10 @@ void renderFrame() {
 #pragma mark - File Path Functions
 
 std::string filePathComponent(const std::string& str) {
-    //std::size_t found = str.find_last_of("/\\");
     return str.substr(0, str.find_last_of("/\\"));
 }
 
 std::string lastPathComponent(const std::string& str) {
-    //std::size_t found = str.find_last_of("/\\");
     return str.substr(str.find_last_of("/\\")+1);
 }
 

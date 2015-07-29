@@ -1,22 +1,15 @@
-//
-//  Game.h
-//  rpg-game
-//
-//  Created by darkmage on 7/23/15.
-//  Copyright (c) 2015 Mike Bell. All rights reserved.
-//
-
-#ifndef __rpg_game__Game__
-#define __rpg_game__Game__
+#ifndef _GAME_H
+#define _GAME_H
 
 #include <string>
 
 class Game {
 public:
     Game();
-    
+    std::string getName();
+    void setName(std::string s);
 private:
     std::string name;
 };
 
-#endif /* defined(__rpg_game__Game__) */
+#endif 
