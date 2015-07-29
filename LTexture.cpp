@@ -1,4 +1,5 @@
 #include "LTexture.h"
+
 LTexture::LTexture() {
     mTexture = NULL;
     gRenderer = NULL;
@@ -6,9 +7,11 @@ LTexture::LTexture() {
     mWidth = 0;
     mHeight = 0;
 }
+
 LTexture::~LTexture() {
     free();
 }
+
 bool LTexture::loadFromFile( std::string path ) {
     //Get rid of preexisting texture
     free();
@@ -41,6 +44,7 @@ bool LTexture::loadFromFile( std::string path ) {
     mTexture = newTexture;
     return mTexture != NULL;
 }
+
 bool LTexture::loadFromRenderedText( std::string textureText, SDL_Color textColor ) {
     //Get rid of preexisting texture
     free();
@@ -66,6 +70,7 @@ bool LTexture::loadFromRenderedText( std::string textureText, SDL_Color textColo
     //Return success
     return mTexture != NULL;
 }
+
 void LTexture::free() {
     //Free texture if it exists
     if( mTexture != NULL ) {
@@ -75,6 +80,7 @@ void LTexture::free() {
         mHeight = 0;
     }
 }
+
 void LTexture::render( int x, int y, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip ) {
     //Set rendering space and render to screen
     SDL_Rect renderQuad = { x, y, mWidth, mHeight };
@@ -86,32 +92,41 @@ void LTexture::render( int x, int y, SDL_Rect* clip, double angle, SDL_Point* ce
     //Render to screen
     SDL_RenderCopyEx( gRenderer, mTexture, clip, &renderQuad, angle, center, flip );
 }
+
 void LTexture::setColor( Uint8 red, Uint8 green, Uint8 blue ) {
     SDL_SetTextureColorMod( mTexture, red, green, blue );
 }
+
 void LTexture::setBlendMode( SDL_BlendMode blending ) {
     //Set blending function
     SDL_SetTextureBlendMode( mTexture, blending );
 }
+
 void LTexture::setAlpha( Uint8 alpha ) {
     //Modulate texture alpha
     SDL_SetTextureAlphaMod( mTexture, alpha );
 }
+
 int LTexture::getWidth() {
     return mWidth;
 }
+
 int LTexture::getHeight() {
     return mHeight;
 }
+
 void LTexture::setRenderer(SDL_Renderer *renderer) {
     gRenderer = renderer;
 }
+
 void LTexture::setFont(TTF_Font *font) {
     gFont = font;
 }
+
 SDL_Renderer *LTexture::getRenderer() {
     return gRenderer;
 }
+
 TTF_Font *LTexture::getFont() {
     return gFont;
 }

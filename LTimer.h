@@ -1,6 +1,8 @@
 #ifndef _LTIMER_H
 #define _LTIMER_H
+
 #include <SDL2/SDL.h>
+
 class LTimer {
 public:
     LTimer();
@@ -18,5 +20,6 @@ private:
     bool mPaused;
     bool mStarted;
 };
+
 #endif 
 

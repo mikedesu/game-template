@@ -11,42 +11,54 @@
 
 #define DEBUG_MODE 1
 //#define PRINT_FPS_TO_STDOUT 1
+
 #define mPrint(s) (std::cout << lastPathComponent(__FILE__) << ":" << __LINE__ << ": " << s << std::endl)
 #define WhiteColor24 {0xff,0xff,0xff}
 #define WhiteColor32 {0xff,0xff,0xff,0xff}
+
 const int ArrowKeyLeft  = 1073741904;
 const int ArrowKeyRight = 1073741903;
 const int ArrowKeyUp    = 1073741906;
 const int ArrowKeyDown  = 1073741905;
+
 const int DefaultNumRectsWide = 32; 
 const int DefaultNumRectsHigh = 24; 
 const int DefaultScreenWidth  = 640; 
 const int DefaultScreenHeight = 480;
+
 int NumRectsWide = DefaultNumRectsWide;
 int NumRectsHigh = DefaultNumRectsHigh;
 int ScreenWidth  = DefaultScreenWidth;
 int ScreenHeight = DefaultScreenHeight;
+
 #define RECT_WIDTH  (ScreenWidth/NumRectsWide)
 #define RECT_HEIGHT (ScreenHeight/NumRectsHigh)
+
 int RectWidth  = RECT_WIDTH;
 int RectHeight = RECT_HEIGHT;
+
 //graphics management functions
+
 bool graphicsInit();
 bool loadMedia();
 void close();
 void renderFrame();
+
 //file path functions
 std::string lastPathComponent(const std::string& str);
+
 SDL_Window   *gWindow        = NULL;
 SDL_Surface  *gScreenSurface = NULL;
 SDL_Renderer *gRenderer      = NULL;
 SDL_Texture  *gTexture       = NULL;
+
 Game game;
 LTexture gFPSTexture;
 LTexture gFrameCountTexture;
 TTF_Font *gDebugPanelFont;
 int frameCount  = 0;
 float avgFPS;
+
 int main( int argc, char* args[] ) {
     if (!graphicsInit()) {
         printf("Failed to init");
@@ -87,6 +99,7 @@ int main( int argc, char* args[] ) {
     close();
     return 0;
 }
+
 bool graphicsInit() {
     bool success = true;
     if ( SDL_Init(SDL_INIT_VIDEO) < 0 ) {
@@ -123,6 +136,7 @@ bool graphicsInit() {
     }
     return success;
 }
+
 bool loadMedia() {
 #ifdef DEBUG
     printf( "loadMedia()\n" );
@@ -157,6 +171,7 @@ bool loadMedia() {
     }
     return success;
 }
+
 void close() {
     // destroy the texture, renderer, window, and set them to null
     SDL_DestroyTexture(gTexture);
@@ -174,7 +189,9 @@ void close() {
     IMG_Quit();
     SDL_Quit();
 }
+
 #pragma mark - Drawing Functions
+
 void renderFrame() {
     //clear screen
     int r = 0xff;
@@ -210,7 +227,9 @@ void renderFrame() {
     SDL_RenderPresent(gRenderer);
     frameCount++;
 }
+
 #pragma mark - File Path Functions
+
 std::string lastPathComponent(const std::string& str) {
     return str.substr(str.find_last_of("/\\")+1);
 }
